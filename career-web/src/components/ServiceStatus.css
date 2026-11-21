@@ -1,0 +1,27 @@
+/* Stage 05-4: compact read-only service status beside the page header. */
+.service-health { margin-left:auto; display:flex; align-items:center; justify-content:flex-end;
+  flex-wrap:wrap; gap:6px; min-width:0; padding:2px 0; color:#35526e; font-size:12px; }
+.service-health__heading {font-size:11px; font-weight:700; white-space:nowrap; margin-right:2px; color:#526983}
+.service-health__item {display:inline-flex; align-items:center; gap:5px; border:1px solid #dce5f2;
+  border-radius:20px; background:#f8fbff; padding:5px 8px; white-space:nowrap; font-weight:650}
+.service-health__dot {display:inline-block; height:7px; width:7px; border-radius:50%; background:#a4afbf}
+.service-health__item--up .service-health__dot {background:#16975b}
+.service-health__item--down .service-health__dot {background:#d94b4b}
+.service-health__refresh {flex-shrink:0; border:1px solid #d0dcef; background:#fff; color:#42618a;
+  border-radius:9px; padding:4px 9px; min-width:32px; font-size:16px; cursor:pointer}
+.service-health__refresh:hover,.service-health__refresh:focus-visible {border-color:#4c8df2; outline-color:#82b7ff}
+/* Tab labels remain one line; on narrow windows use horizontal scrolling. */
+.shell > .tabs {display:flex; flex-wrap:nowrap; overflow-x:auto; overflow-y:hidden; gap:4px;
+  -webkit-overflow-scrolling:touch; scrollbar-width:thin}
+.shell > .tabs > button {white-space:nowrap; flex:0 0 auto; min-width:max-content}
+/* Reduce unnecessary header wrapping when status is shown at the top right. */
+.shell > .topbar {display:flex; flex-wrap:wrap; align-items:center; gap:10px}
+.shell > .topbar .brandcopy {min-width:0}
+@media (max-width:900px) {
+  .shell > .topbar .service-health {flex-basis:100%; justify-content:flex-end}
+}
+@media (max-width:540px) {
+  .service-health__heading {display:none}
+  .service-health {gap:4px}
+  .service-health__item {padding:4px 6px; font-size:11px}
+}

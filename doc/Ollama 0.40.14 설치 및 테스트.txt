@@ -1,0 +1,58 @@
+2. Ollama 0.40.14 설치 및 테스트
+docker pull ollama/ollama:0.40.14
+
+# 실행 파일 테스트
+docker run --rm `
+    --entrypoint /bin/ollama `
+    ollama/ollama:0.40.14 `
+    --version
+
+Write-Host "ExitCode=$LASTEXITCODE"
+
+# 새 모델설치
+docker compose exec -T ollama ollama pull qwen3:4b-instruct
+
+
+
+$body = @{
+    model = "qwen3:4b-instruct"
+    messages = @(
+        @{
+            role = "system"
+            content = "Extract only the requested job role. Answer in one word."
+        }
+        @{
+            role = "user"
+            content = "SBI저축은행 프로젝트에서 PL로 근무했습니다."
+        }
+    )
+    stream = $false
+    options = @{
+        num_predict = 64
+        num_ctx = 2048
+        temperature = 0
+    }
+} | ConvertTo-Json -Depth 6
+
+$timer = [System.Diagnostics.Stopwatch]::StartNew()
+
+try {
+    $result = Invoke-RestMethod `
+        -Uri "http://127.0.0.1:11434/api/chat" `
+        -Method Post `
+        -ContentType "application/json; charset=utf-8" `
+        -Body ([System.Text.Encoding]::UTF8.GetBytes($body)) `
+        -TimeoutSec 90 `
+        -ErrorAction Stop
+
+    Write-Host "Response=$($result.message.content)"
+    Write-Host "Tokens=$($result.eval_count)"
+    Write-Host "DoneReason=$($result.done_reason)"
+}
+catch {
+    Write-Host "ERROR=$($_.Exception.Message)"
+}
+finally {
+    $timer.Stop()
+    Write-Host "ElapsedSeconds=$([math]::Round($timer.Elapsed.TotalSeconds, 2))"
+}

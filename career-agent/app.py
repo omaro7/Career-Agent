@@ -1,0 +1,95 @@
+"""Internal Python Worker: existing Excel parsing + Stage 4 PPTX rendering."""
+import os
+import json
+from pathlib import Path
+from jsonschema import Draft202012Validator, FormatChecker
+from datetime import date
+from fastapi import FastAPI, HTTPException, Request
+from fastapi.responses import Response
+from career_parser import parse_profile_bytes, MAX_WORKBOOK_BYTES
+from career_pptx import render_pptx, available_templates, resolve_selected_template, inspect_template
+
+from word_ai_api import router as word_ai_router
+app = FastAPI(title='BWG Career Agent', docs_url=None, redoc_url=None, openapi_url=None)
+app.include_router(word_ai_router)
+SCHEMA = json.loads((Path(__file__).parent / 'schema/profile-v1.schema.json').read_text(encoding='utf-8'))
+VALIDATOR = Draft202012Validator(SCHEMA, format_checker=FormatChecker())
+PPTX_MIME = 'application/vnd.openxmlformats-officedocument.presentationml.presentation'
+TEMPLATE_PATH = Path(os.getenv('CAREER_PPTX_TEMPLATE', '/app/templates/customer-profile.pptx'))
+
+
+def template_directory() -> Path:
+    # Tests and existing installations can override TEMPLATE_PATH without a new env var.
+    return Path(os.getenv('CAREER_PPTX_TEMPLATE_DIR', str(TEMPLATE_PATH.parent)))
+
+
+@app.get('/pptx/templates')
+def list_pptx_templates():
+    items = available_templates(template_directory())
+    ready = [t for t in items if t['status'] == 'READY']
+    default_id = TEMPLATE_PATH.name if any(t['templateId'] == TEMPLATE_PATH.name for t in ready) else (ready[0]['templateId'] if ready else None)
+    return {'templates': items, 'defaultTemplateId': default_id}
+
+
+@app.get('/pptx/templates/{template_id}/inspect')
+def inspect_pptx_template(template_id: str):
+    # Permit inspection even when a PPTX needs manual mapping; no arbitrary filesystem paths.
+    allowed = {t['templateId'] for t in available_templates(template_directory())}
+    if template_id not in allowed:
+        raise HTTPException(status_code=404, detail='Unknown customer PPTX')
+    try:
+        result = inspect_template(template_directory() / template_id)
+        return result
+    except Exception as exc:
+        raise HTTPException(status_code=422, detail='PPTX template cannot be inspected') from exc
+
+
+@app.get('/health')
+def health():
+    return {'status': 'UP', 'app': os.getenv('CAREER_APP_NAME', 'BWG-Career-Agent-v1.0'), 'stage': '4'}
+
+@app.post('/parse-profile')
+async def parse_profile(request: Request, as_of: date):
+    try:
+        declared = request.headers.get('content-length')
+        if declared and int(declared) > MAX_WORKBOOK_BYTES:
+            raise HTTPException(status_code=413, detail='Excel file exceeds 10 MB limit')
+        body = await request.body()
+        if len(body) > MAX_WORKBOOK_BYTES:
+            raise HTTPException(status_code=413, detail='Excel file exceeds 10 MB limit')
+        result = parse_profile_bytes(body, as_of)
+        validation_errors = list(VALIDATOR.iter_errors(result))
+        if validation_errors:
+            raise HTTPException(status_code=422, detail='내부 프로파일 JSON Schema 검증 실패')
+        return result
+    except ValueError as exc:
+        raise HTTPException(status_code=422, detail=str(exc)) from exc
+
+@app.post('/render-customer-pptx')
+async def render_customer_pptx(request: Request):
+    """Only reachable over the internal Compose network via Spring Boot API."""
+    declared = request.headers.get('content-length')
+    if declared and int(declared) > 250_000:
+        raise HTTPException(status_code=413, detail='Request exceeds 250 KB')
+    raw = await request.body()
+    if len(raw) > 250_000:
+        raise HTTPException(status_code=413, detail='Request exceeds 250 KB')
+    try:
+        data = json.loads(raw)
+        if not isinstance(data, dict):
+            raise ValueError('Expected JSON object')
+        template_id = data.get('templateId') or TEMPLATE_PATH.name  # Backward-compatible default.
+        path = resolve_selected_template(template_directory(), template_id)
+        pptx, meta = render_pptx(path, data)
+    except (ValueError, KeyError, TypeError) as exc:
+        raise HTTPException(status_code=422, detail=str(exc)) from exc
+    return Response(
+        pptx, media_type=PPTX_MIME,
+        headers={'X-Pptx-Page-Count': str(meta['pageCount']),
+                 'X-Pptx-Project-Count': str(meta['projectCount']),
+                 'Cache-Control': 'no-store'}
+    )
+
+# Stage04 Career AI chatbot routes
+from career_ai_api import router as career_ai_router
+app.include_router(career_ai_router)

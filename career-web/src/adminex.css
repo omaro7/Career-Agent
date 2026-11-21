@@ -1,0 +1,170 @@
+/* BWG Career Agent / Adminex-inspired theme. Namespaced to avoid breaking legacy screens. */
+:root { --ca-blue: #3b82f6; --ca-blue-dark:#2563eb; --ca-text:#18263d; --ca-muted:#7d8ba0; --ca-line:#e8edf3; --ca-canvas:#f7f9fc; --ca-side:250px; }
+* { box-sizing:border-box; }
+body { margin:0; }
+.shell.ca-admin { display:grid; grid-template-columns:var(--ca-side) minmax(0,1fr); grid-template-rows:72px minmax(0,1fr); max-width:none; min-height:100vh; width:100%; padding:0; margin:0; gap:0; background:var(--ca-canvas); color:var(--ca-text); font-family:Inter, Pretendard, 'Noto Sans KR', 'Segoe UI', sans-serif; }
+.ca-admin > .ca-sidebar-logo { grid-column:1;grid-row:1; display:flex;align-items:center;gap:11px;background:white;padding:0 22px;border-right:1px solid var(--ca-line);border-bottom:1px solid var(--ca-line);z-index:4; }
+.ca-logo-mark { display:grid;place-items:center;width:34px;height:34px;border-radius:10px;background:linear-gradient(135deg,#60a5fa,#2563eb);color:#fff;font-size:16px;font-weight:800;letter-spacing:-2px; }
+.ca-logo-name { font-size:17px;font-weight:800;letter-spacing:-.5px;white-space:nowrap; }
+.ca-logo-name small {display:block;font-size:10px;font-weight:600;color:var(--ca-muted);letter-spacing:.8px;margin-top:1px;}
+.ca-admin > .topbar { grid-column:2;grid-row:1;display:flex;align-items:center;min-width:0;max-width:none;width:auto;margin:0;padding:0 26px;border-radius:0;border:0;border-bottom:1px solid var(--ca-line);background:#fff;box-shadow:none;gap:14px;justify-content:space-between; }
+.ca-admin .topbar .brandmark {display:none;}
+.ca-admin .topbar .brandcopy h1 { font-size:16px;margin:0;color:var(--ca-text);font-weight:750;letter-spacing:-.4px; }
+.ca-admin .topbar .brandcopy p {margin:4px 0 0;font-size:11px;color:var(--ca-muted);}
+.ca-admin .topbar .stage-pill {display:none;}
+.ca-top-actions { display:flex;align-items:center;gap:13px;margin-left:auto; }
+.ca-top-search { width:245px;height:38px;border:1px solid var(--ca-line);border-radius:9px;display:flex;align-items:center;gap:8px;color:#9ba7b5;padding:0 12px;background:#fff; }
+.ca-top-search input {border:0!important;background:transparent!important;min-width:0;outline:0!important;box-shadow:none!important;font-size:12px;flex:1;color:#334155;padding:0!important;margin:0!important;height:100%;}
+.ca-top-search input:focus {outline:none;}
+.ca-btn-primary {display:inline-flex;align-items:center;justify-content:center;gap:5px;min-height:38px;padding:0 16px!important;background:var(--ca-blue)!important;border:1px solid var(--ca-blue)!important;border-radius:9px!important;color:white!important;font-weight:650!important;font-size:12px;white-space:nowrap;cursor:pointer;}
+.ca-btn-primary:hover {background:var(--ca-blue-dark)!important;}
+.ca-user-dot {display:grid;place-items:center;width:32px;height:32px;border-radius:50%;background:#e3edff;color:#2f6ce5;font-size:11px;font-weight:800;}
+.ca-admin > .tabs { grid-column:1;grid-row:2;display:flex;flex-direction:column;align-items:stretch;align-content:stretch;justify-content:flex-start;position:sticky;top:0;align-self:stretch;height:calc(100vh - 72px);width:var(--ca-side);max-width:none;overflow-y:auto;gap:3px;padding:21px 11px;background:#fff;border-radius:0;border:0;border-right:1px solid var(--ca-line);margin:0;box-shadow:none;z-index:3; }
+.ca-admin > .tabs .ca-sidebar-heading {display:block;padding:12px 12px 8px;color:#98a4b4;font-weight:750;font-size:10px;letter-spacing:1.25px;}
+.ca-admin > .tabs > button {display:flex;align-items:center;justify-content:flex-start;width:100%;min-height:41px;text-align:left;padding:10px 12px;border:0;border-radius:8px;background:transparent;color:#5f6e83;font-size:12px;font-weight:600;box-shadow:none;line-height:1.3;white-space:normal;cursor:pointer;}
+.ca-admin > .tabs > button:hover {background:#f2f7ff;color:#306fe9;}
+.ca-admin > .tabs > button.active {background:var(--ca-blue)!important;color:#fff!important;}
+.ca-admin > .tabs > button::before {content:'◫';font-size:15px;font-weight:500;opacity:.84;margin-right:13px;width:17px;flex:0 0 17px;text-align:center;}
+.ca-admin > .tabs > button[data-ca-tab='dashboard']::before {content:'▦';}
+.ca-admin > .tabs > button[data-ca-tab='import']::before {content:'▤';}
+.ca-admin > .tabs > button[data-ca-tab='word']::before {content:'▧';}
+.ca-admin > .tabs > button[data-ca-tab='list']::before {content:'☷';}
+.ca-admin > .tabs > button[data-ca-tab='export']::before {content:'▣';}
+.ca-admin > .tabs > button[data-ca-tab='templates']::before {content:'▥';}
+.ca-admin > .tabs > button[data-ca-tab='system']::before {content:'◉';}
+.ca-admin > .ca-body {grid-column:2;grid-row:2;min-width:0;padding:27px 27px 18px;display:flex;flex-direction:column;gap:18px;}
+.ca-admin .ca-body > .panel, .ca-admin .ca-body > .results {width:100%;max-width:none;margin:0;border:1px solid var(--ca-line);box-shadow:0 3px 10px rgba(31,56,92,.035);border-radius:13px;background:white;}
+.ca-admin .panel .section-header h2, .ca-admin .result-title h2 {color:var(--ca-text);letter-spacing:-.5px;}
+.ca-admin .panel input:not([type='file']):focus {border-color:var(--ca-blue);}
+.ca-admin .panel button.primary {background:var(--ca-blue);border-color:var(--ca-blue);}
+.ca-admin .ca-body > footer {color:#99a4b4;margin-top:auto;padding:16px 0;text-align:center;font-size:11px;}
+.ca-dashboard {display:flex;flex-direction:column;gap:20px;}
+.ca-page-heading {display:flex;align-items:center;justify-content:space-between;gap:16px;}
+.ca-page-heading .ca-overline {font-size:10px;letter-spacing:1.4px;font-weight:800;color:#7d98c5;}
+.ca-page-heading h2 {font-size:27px;letter-spacing:-.8px;font-weight:780;margin:5px 0 4px;line-height:1.3;}
+.ca-page-heading p {color:var(--ca-muted);font-size:12px;margin:0;}
+.ca-stats {display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:14px;}
+.ca-stat {min-width:0;background:white;padding:20px 19px;border:1px solid var(--ca-line);border-radius:12px;box-shadow:0 3px 10px rgba(31,56,92,.035);}
+.ca-stat-icon {display:grid;place-items:center;width:38px;height:38px;border-radius:9px;margin-bottom:21px;}
+.ca-blue {background:#e7eeff;color:#477ce7;}.ca-mint {background:#e1f9ed;color:#24ae72;}.ca-amber {background:#fff4d6;color:#d6a02e;}.ca-violet {background:#eee8ff;color:#8056d9;}
+.ca-stat p {color:#8490a0;font-size:11px;margin:0 0 9px;}
+.ca-stat strong {color:#1c2a3d;font-size:21px;letter-spacing:-.6px;font-weight:760;display:block;min-height:30px;line-height:1.35;}
+.ca-stat strong small {font-size:12px;margin-left:5px;}
+.ca-stat-description {display:block;color:#8a9bad;font-size:10px;margin-top:8px;}
+.ca-dashboard-columns {display:grid;grid-template-columns:minmax(0,1.45fr) minmax(280px,1fr);gap:15px;}
+.ca-widget {border:1px solid var(--ca-line);border-radius:13px;padding:23px 22px;background:white;min-width:0;box-shadow:0 3px 10px rgba(31,56,92,.035);}
+.ca-widget-heading {display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:18px;gap:10px;}
+.ca-widget-heading h3 {margin:0 0 5px;font-size:15px;color:#203046;}
+.ca-widget-heading p {margin:0;font-size:11px;color:#98a5b4;}
+.ca-action-grid {display:grid;grid-template-columns:1fr 1fr;gap:10px;}
+.ca-action {width:100%;border:1px solid var(--ca-line);border-radius:10px;padding:13px 12px;display:flex;align-items:center;text-align:left;gap:11px;background:white;cursor:pointer;color:#334155;min-height:83px;}
+.ca-action:hover {background:#f7faff;border-color:#bed4ff;}
+.ca-action-icon {display:grid;place-items:center;flex:none;width:35px;height:35px;background:#eff5ff;color:#4381ef;border-radius:8px;}
+.ca-action-body {display:flex;flex-direction:column;gap:5px;min-width:0;flex:1;}
+.ca-action-body strong {font-size:12px;color:#293950;}
+.ca-action-body small {color:#8c9cae;font-size:10px;line-height:1.5;}
+.ca-action-arrow {color:#91a3bb;display:flex;flex:none;}
+.ca-action-arrow svg {width:15px;height:15px;}
+.ca-text-btn {border:0;background:none;color:var(--ca-blue);font-size:11px;font-weight:650;cursor:pointer;white-space:nowrap;}
+.ca-recent-list {display:flex;flex-direction:column;}
+.ca-recent-person {border:0;border-bottom:1px solid #eff2f7;background:white;display:flex;width:100%;align-items:center;text-align:left;padding:11px 3px;gap:10px;cursor:pointer;}
+.ca-recent-person:last-child {border-bottom:0;}
+.ca-recent-person:hover {background:#f8fbff;}
+.ca-person-avatar {width:34px;height:34px;border-radius:50%;background:#e5efff;color:#3872d8;display:grid;place-items:center;flex:none;font-size:12px;font-weight:800;}
+.ca-recent-info {display:flex;flex-direction:column;gap:3px;min-width:0;flex:1;}
+.ca-recent-info strong {font-size:12px;color:#293950;}.ca-recent-info small {color:#8995a8;font-size:10px;overflow-wrap:anywhere;}
+.ca-recent-arrow {font-size:21px;color:#9daabe;}
+.ca-empty-state {padding:35px 5px;color:#8a9bae;font-size:12px;text-align:center;line-height:1.8;}
+.ca-workflow {background:white;border:1px solid var(--ca-line);border-radius:12px;padding:17px 21px;display:flex;align-items:center;gap:12px;flex-wrap:wrap;box-shadow:0 3px 10px rgba(31,56,92,.025);}
+.ca-workflow span {font-size:11px;color:#8997aa;margin-right:auto;}
+.ca-workflow strong {font-size:11px;font-weight:600;color:#56718f;}
+.ca-workflow b {color:#9ab0cd;font-size:12px;}
+@media (max-width:1150px) {.ca-stats{grid-template-columns:repeat(2,minmax(0,1fr))}.ca-dashboard-columns{grid-template-columns:1fr}.ca-top-search{width:190px;}}
+@media (max-width:850px) {.shell.ca-admin{grid-template-columns:1fr;grid-template-rows:64px auto minmax(0,1fr)}.ca-admin>.ca-sidebar-logo{display:none}.ca-admin>.topbar{grid-column:1;grid-row:1;padding:0 16px}.ca-admin>.tabs{grid-column:1;grid-row:2;position:relative;width:100%;height:auto;max-height:none;overflow-x:auto;overflow-y:hidden;flex-direction:row;flex-wrap:nowrap;gap:5px;padding:9px 12px;border-bottom:1px solid var(--ca-line);border-right:0}.ca-admin>.tabs>.ca-sidebar-heading{display:none}.ca-admin>.tabs>button{width:auto;flex:0 0 auto;white-space:nowrap;min-height:35px;padding:8px 11px;font-size:11px}.ca-admin>.tabs>button::before{margin-right:7px}.ca-admin>.ca-body{grid-column:1;grid-row:3;padding:16px}}
+@media (max-width:575px) {.ca-top-search{display:none}.ca-user-dot{display:none}.ca-admin .topbar .brandcopy p{display:none}.ca-stats{grid-template-columns:1fr 1fr;gap:9px}.ca-stat{padding:13px}.ca-stat strong{font-size:15px}.ca-stat-icon{margin-bottom:9px}.ca-action-grid{grid-template-columns:1fr}.ca-page-heading h2{font-size:22px}.ca-page-heading .ca-btn-primary{display:none}.ca-workflow{gap:6px}}
+
+/* BWG_WORD_WIDE_FIX_BEGIN
+   Word import page only. Relies on the existing Adminex side navigation.
+   Chrome 105+ / Edge 105+ support :has().
+*/
+.ca-admin:has(> .tabs > button[data-ca-tab="word"].active) .ca-body {
+  align-items: stretch;
+  min-width: 0;
+}
+
+/* The Word component may render a section, div, article or main as its root. */
+.ca-admin:has(> .tabs > button[data-ca-tab="word"].active)
+  .ca-body > :is(div, section, article, main):not(footer) {
+  box-sizing: border-box;
+  width: 100% !important;
+  max-width: none !important;
+  min-width: 0;
+  margin-left: 0 !important;
+  margin-right: 0 !important;
+}
+
+/* Remove a nested fixed-width upload card while leaving its fields intact. */
+.ca-admin:has(> .tabs > button[data-ca-tab="word"].active)
+  .ca-body > :is(div, section, article, main)
+  > :is(div, section, article, main) {
+  box-sizing: border-box;
+  width: 100% !important;
+  max-width: none !important;
+  min-width: 0;
+  margin-left: 0 !important;
+  margin-right: 0 !important;
+}
+
+/* Inline maxWidth styles compile to an HTML max-width property. */
+.ca-admin:has(> .tabs > button[data-ca-tab="word"].active)
+  .ca-body :is(div, section, article, main, form)[style*="max-width"] {
+  max-width: none !important;
+}
+
+/* On small screens keep the original mobile layout and avoid horizontal scrolling. */
+@media (max-width: 850px) {
+  .ca-admin:has(> .tabs > button[data-ca-tab="word"].active)
+    .ca-body > :is(div, section, article, main) {
+    min-width: 0;
+  }
+}
+/* BWG_WORD_WIDE_FIX_END */
+
+/* BWG_WORD_WIDE_V103_BEGIN
+   Scoped layout override for the actual WordCareerImport React root.
+   Does not depend on :has(), sidebar state, or the internal Word component classname.
+*/
+.ca-admin .ca-body > .ca-word-wide {
+  display: block;
+  align-self: stretch;
+  flex: 0 0 auto;
+  box-sizing: border-box;
+  min-width: 0;
+  width: 100% !important;
+  max-width: none !important;
+  margin: 0 !important;
+  padding: 0;
+}
+
+/* Widen the outer Word screen and its first two block-level wrappers. */
+.ca-admin .ca-body > .ca-word-wide > :is(div, section, article, main, form),
+.ca-admin .ca-body > .ca-word-wide > :is(div, section, article, main) > :is(div, section, article, main, form),
+.ca-admin .ca-body > .ca-word-wide > :is(div, section, article, main) > :is(div, section, article, main) > :is(div, section, article, main, form) {
+  box-sizing: border-box;
+  min-width: 0;
+  width: 100% !important;
+  max-width: none !important;
+  margin-inline: 0 !important;
+}
+
+/* Catch fixed max-widths from inline styles or utility classes on the Word screen. */
+.ca-admin .ca-word-wide :is(div, section, article, main, form)[style*="max-width"],
+.ca-admin .ca-word-wide :is(div, section, article, main, form)[style*="maxWidth"],
+.ca-admin .ca-word-wide :is(.panel, .card, .container, .upload-panel, .word-import, .word-import-card, .word-import-panel) {
+  max-width: none !important;
+}
+
+@media (max-width: 850px) {
+  .ca-admin .ca-body > .ca-word-wide { width: 100% !important; overflow-x: auto; }
+}
+/* BWG_WORD_WIDE_V103_END */

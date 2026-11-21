@@ -1,0 +1,47 @@
+{
+ "$schema":"https://json-schema.org/draft/2020-12/schema",
+ "title":"BWG-Career-Agent-v1.0 Parsed Profile v1",
+ "type":"object",
+ "required":["schema_version","source","profile","computed","validation_issues","summary"],
+ "additionalProperties":false,
+ "properties":{
+  "schema_version":{"const":"1.0.0"},
+  "source":{"type":"object","required":["file_name","sha256","sheet","template_version"],"additionalProperties":false,"properties":{
+   "file_name":{"type":"string"},"sha256":{"type":"string","pattern":"^[0-9a-f]{64}$"},
+   "sheet":{"const":"프로파일"},"template_version":{"type":"string"}}},
+  "profile":{"type":"object","required":["name","birth_date","position_title","engineer_grade","education","certifications","projects"],"additionalProperties":false,"properties":{
+   "name":{"$ref":"#/$defs/text"},"birth_date":{"$ref":"#/$defs/nullableDate"},
+   "position_title":{"$ref":"#/$defs/text"},"engineer_grade":{"$ref":"#/$defs/text"},
+   "education":{"type":"array","items":{"$ref":"#/$defs/education"}},
+   "certifications":{"type":"array","items":{"$ref":"#/$defs/certification"}},
+   "projects":{"type":"array","items":{"$ref":"#/$defs/project"}}}},
+  "computed":{"type":"object","required":["as_of_date","age_years"],"additionalProperties":false,"properties":{
+   "as_of_date":{"$ref":"#/$defs/date"},"age_years":{"type":["integer","null"],"minimum":0}}},
+  "validation_issues":{"type":"array","items":{"$ref":"#/$defs/issue"}},
+  "summary":{"type":"object","required":["project_rows","unique_project_candidates","error_count","warning_count"],"additionalProperties":false,"properties":{
+   "project_rows":{"type":"integer","minimum":0},"unique_project_candidates":{"type":"integer","minimum":0},
+   "error_count":{"type":"integer","minimum":0},"warning_count":{"type":"integer","minimum":0}}}
+ },
+ "$defs":{
+  "text":{"type":["string","null"]},
+  "date":{"type":"string","format":"date","pattern":"^\\d{4}-\\d{2}-\\d{2}$"},
+  "nullableDate":{"anyOf":[{"$ref":"#/$defs/date"},{"type":"null"}]},
+  "education":{"type":"object","additionalProperties":false,"required":["level","school_name","major","admission_date","graduation_date","completion_status","source_row"],"properties":{
+   "level":{"$ref":"#/$defs/text"},"school_name":{"$ref":"#/$defs/text"},"major":{"$ref":"#/$defs/text"},
+   "admission_date":{"$ref":"#/$defs/nullableDate"},"graduation_date":{"$ref":"#/$defs/nullableDate"},
+   "completion_status":{"$ref":"#/$defs/text"},"source_row":{"type":"integer","minimum":1}}},
+  "certification":{"type":"object","additionalProperties":false,"required":["certification_name","issuer","obtained_date","source_row"],"properties":{
+   "certification_name":{"type":"string","minLength":1},"issuer":{"$ref":"#/$defs/text"},
+   "obtained_date":{"$ref":"#/$defs/nullableDate"},"source_row":{"type":"integer","minimum":1}}},
+  "project":{"type":"object","additionalProperties":false,"required":["project_name","start_date","end_date","source_duration_text","role_text","technology_text","client_name","source_row","duplicate_suspected"],"properties":{
+   "project_name":{"type":"string","minLength":1},"start_date":{"$ref":"#/$defs/nullableDate"},
+   "end_date":{"$ref":"#/$defs/nullableDate"},"source_duration_text":{"$ref":"#/$defs/text"},
+   "role_text":{"$ref":"#/$defs/text"},"technology_text":{"$ref":"#/$defs/text"},
+   "client_name":{"$ref":"#/$defs/text"},"source_row":{"type":"integer","minimum":1},
+   "duplicate_suspected":{"type":"boolean"}}},
+  "issue":{"type":"object","additionalProperties":false,"required":["code","severity","source_cell","project_source_row","message"],"properties":{
+   "code":{"type":"string"},"severity":{"enum":["INFO","WARNING","ERROR"]},
+   "source_cell":{"type":"string"},"project_source_row":{"type":["integer","null"]},
+   "message":{"type":"string"}}}
+ }
+}

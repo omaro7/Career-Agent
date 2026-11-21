@@ -1,0 +1,152 @@
+name: bwg-career-agent
+
+# Legacy compose.yaml is NOT modified. Run with --env-file .env.stage02.
+# Infrastructure services start by default; app services are enabled after source migration.
+services:
+  career-db:
+    image: pgvector/pgvector:pg17
+    container_name: career-db
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB}
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${BWG_CAREER_DB_PASSWORD}
+    ports:
+      - "127.0.0.1:${POSTGRES_PORT:-15432}:5432"
+    volumes:
+      - career_postgres_data:/var/lib/postgresql/data
+      - ./career-db/init:/docker-entrypoint-initdb.d:ro
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U \"$$POSTGRES_USER\" -d \"$$POSTGRES_DB\""]
+      interval: 10s
+      timeout: 5s
+      retries: 12
+      start_period: 10s
+    networks: [career-net]
+
+  career-ollama:
+    image: ollama/ollama:${OLLAMA_VERSION:-0.40.14}
+    container_name: career-ollama
+    restart: unless-stopped
+    environment:
+      OLLAMA_KEEP_ALIVE: 5m
+      OLLAMA_NUM_PARALLEL: "1"
+    ports:
+      - "127.0.0.1:${OLLAMA_PORT:-11435}:11434"
+    volumes:
+      - career_ollama_data:/root/.ollama
+    networks: [career-net]
+
+  career-qdrant:
+    image: qdrant/qdrant:v1.15.5
+    container_name: career-qdrant
+    restart: unless-stopped
+    ports:
+      - "127.0.0.1:${QDRANT_PORT:-16333}:6333"
+    volumes:
+      - career_qdrant_data:/qdrant/storage
+    networks: [career-net]
+
+  # app profile: enable ONLY after copying and adapting existing source files.
+  # Expected Dockerfiles: ./career-agent/Dockerfile etc.
+  career-agent:
+    profiles: [app]
+    build:
+      context: ./career-agent
+    container_name: career-agent
+    restart: unless-stopped
+    environment:
+      DATABASE_HOST: career-db
+      DATABASE_PORT: "5432"
+      DATABASE_NAME: ${POSTGRES_DB}
+      DATABASE_USER: ${POSTGRES_USER}
+      DATABASE_PASSWORD: ${BWG_CAREER_DB_PASSWORD}
+      OLLAMA_BASE_URL: http://career-ollama:11434
+      OLLAMA_MODEL: ${OLLAMA_MODEL:-qwen3:4b-instruct}
+      QDRANT_URL: http://career-qdrant:6333
+      UPLOAD_DIR: /app/uploads
+      CAREER_PPTX_TEMPLATE_DIR: /app/templates
+      CAREER_PPTX_TEMPLATE: /app/templates/customer-profile.pptx
+      CAREER_RAG_AUTO_SYNC: ${CAREER_RAG_AUTO_SYNC:-false}
+      CAREER_RAG_COLLECTION: ${CAREER_RAG_COLLECTION:-career_profiles_stage03_test}
+      CAREER_RAG_SYNC_INTERVAL_SECONDS: ${CAREER_RAG_SYNC_INTERVAL_SECONDS:-30}
+      CAREER_RAG_SYNC_MAX_SCAN: ${CAREER_RAG_SYNC_MAX_SCAN:-5000}
+      CAREER_AI_ANALYSIS_MIN_SCORE: "0.30"
+      CAREER_AI_ANALYSIS_MAX_TOKENS: "256"
+    volumes:
+      - career_uploads:/app/uploads
+      - ./templates:/app/templates:ro
+    expose: ["8001"]
+    depends_on:
+      career-db:
+        condition: service_healthy
+      career-ollama:
+        condition: service_started
+      career-qdrant:
+        condition: service_started
+    networks: [career-net]
+
+  career-api:
+    profiles: [app]
+    build:
+      context: ./career-api
+    container_name: career-api
+    restart: unless-stopped
+    environment:
+      DATABASE_HOST: career-db
+      DATABASE_PORT: "5432"
+      DATABASE_NAME: ${POSTGRES_DB}
+      DATABASE_USER: ${POSTGRES_USER}
+      DATABASE_PASSWORD: ${BWG_CAREER_DB_PASSWORD}
+      AGENT_BASE_URL: http://career-agent:8001
+      UPLOAD_DIR: /app/uploads
+      CAREER_TEMPLATE_DIR: /app/templates
+      CAREER_ACCESS_MODE: local_single_user
+      CAREER_LOCAL_ACTOR: local-user
+      CAREER_AI_WORD_SAVE_BODY_STYLE: "raw"
+      CAREER_AI_APPLY_ENABLED: "true"
+    ports:
+      - "127.0.0.1:${API_PORT:-18000}:8000"
+    volumes:
+      - career_uploads:/app/uploads
+      - ./templates:/app/templates:rw
+    depends_on:
+      career-db:
+        condition: service_healthy
+      career-agent:
+        condition: service_started
+    networks: [career-net]
+
+  career-web:
+    profiles: [app]
+    build:
+      context: ./career-web
+    container_name: career-web
+    restart: unless-stopped
+    ports:
+      - "127.0.0.1:${WEB_PORT:-13000}:80"
+    depends_on:
+      career-api:
+        condition: service_started
+    networks: [career-net]
+
+networks:
+  career-net:
+    driver: bridge
+
+volumes:
+  career_postgres_data:
+    external: true
+    name: bwg-career-agent-stage02_career_postgres_data
+
+  career_ollama_data:
+    external: true
+    name: bwg-career-agent-stage02_career_ollama_data
+
+  career_qdrant_data:
+    external: true
+    name: bwg-career-agent-stage02_career_qdrant_data
+
+  career_uploads:
+    external: true
+    name: bwg-career-agent-stage02_career_uploads

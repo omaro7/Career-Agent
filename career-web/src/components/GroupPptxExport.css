@@ -1,0 +1,59 @@
+.group-pptx { color:#173354; }
+.group-pptx__heading,.group-pptx__row-heading {display:flex; align-items:flex-start; justify-content:space-between; gap:18px; margin-bottom:18px}
+.group-pptx__heading h2,.group-pptx__row-heading h3 {margin:5px 0 7px}
+.group-pptx__heading p,.group-pptx__row-heading p {color:#60738e; font-size:13px; margin:0}
+.group-pptx__count {display:inline-flex; border:1px solid #d4e6ff; background:#edf5ff; color:#215bb2; padding:9px 12px; border-radius:12px; white-space:nowrap; font-size:13px}
+.group-pptx__field {border:1px solid #d8e7fa; border-radius:14px; background:#f8fbff; padding:18px; margin:0 0 26px; min-width:0}
+.group-pptx__field legend,.group-pptx__row legend {font-weight:750; color:#1c4e90; padding:0 7px; font-size:13px}
+.group-pptx__common {display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:14px}
+.group-pptx label {display:flex; flex-direction:column; gap:7px; font-weight:700; font-size:12px; color:#35516f; min-width:0}
+.group-pptx input,.group-pptx select {box-sizing:border-box; width:100%; min-height:41px; border:1px solid #cbdaf0; border-radius:9px; background:#fff; color:#183354; padding:9px 10px; font:inherit; font-weight:450; font-size:13px;}
+.group-pptx input:focus,.group-pptx select:focus {outline:2px solid #82b7ff; border-color:#4487e8}
+.group-pptx small {font-size:11px; color:#647d9a; font-weight:400; line-height:1.5}
+.group-pptx__row-heading button {flex-shrink:0}
+.group-pptx__rows {display:flex; flex-direction:column; gap:12px}
+.group-pptx__row {border:1px solid #d2e2f6; padding:14px; margin:0; border-radius:12px; min-width:0;}
+.group-pptx__fields {display:grid; grid-template-columns:repeat(4,minmax(0,1fr)); gap:10px; align-items:end}
+.group-pptx__actions {display:flex; justify-content:flex-end; gap:7px; margin-top:12px}
+.group-pptx button {min-width:0; white-space:nowrap}
+.group-pptx__delete {border-color:#ffc6c6 !important; color:#bd3434 !important}
+.group-pptx__submit {display:flex; align-items:center; gap:15px; margin-top:22px; flex-wrap:wrap}
+.group-pptx__submit>span {color:#66809a; font-size:12px}
+.group-pptx__note,.group-pptx__error {padding:12px; border-radius:10px; margin:15px 0; font-size:13px}
+.group-pptx__note {background:#eff7ff; border:1px solid #c6e2ff}
+.group-pptx__error {background:#fff4f3; border:1px solid #ffcdca; color:#a92727}
+.group-pptx__status {margin-top:20px; border:1px solid #c8defe; border-radius:12px; padding:16px; background:#f6faff}
+.group-pptx__status>div:first-child {display:flex; justify-content:space-between; gap:12px; font-size:13px}
+.group-pptx__status span {color:#637b9b}
+.group-pptx__status progress {width:100%; height:10px; margin-top:12px; accent-color:#276ee0}
+.group-pptx__status>p {font-size:12px}
+.group-pptx__download {display:inline-block; background:#2169d5; color:#fff !important; padding:11px 17px; border-radius:10px; text-decoration:none; margin-top:9px; font-size:13px; font-weight:700}
+@media(max-width:1100px){.group-pptx__common {grid-template-columns:repeat(2,minmax(0,1fr))}.group-pptx__fields {grid-template-columns:repeat(3,minmax(0,1fr))}}
+@media(max-width:680px){.group-pptx__common,.group-pptx__fields {grid-template-columns:1fr}.group-pptx__heading,.group-pptx__row-heading {flex-direction:column}}
+
+/* Stage 05-2: same native select appearance as the existing PPTX export tab. */
+.group-pptx select.group-pptx__template-select {
+  display: block;
+  width: 100%;
+  min-height: 42px;
+  box-sizing: border-box;
+  padding: 9px 13px;
+  border: 1px solid #cbd8eb;
+  border-radius: 8px;
+  background-color: #f8fafc;
+  color: #183354;
+  font-size: 13px;
+  font-weight: 400;
+  appearance: auto;
+  -webkit-appearance: menulist;
+  cursor: pointer;
+}
+.group-pptx select.group-pptx__template-select:focus-visible {
+  outline: 2px solid #82b7ff;
+  outline-offset: 1px;
+}
+.group-pptx select.group-pptx__template-select option {
+  font-weight: 400;
+  color: #183354;
+  background: #fff;
+}

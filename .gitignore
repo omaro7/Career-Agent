@@ -1,0 +1,23 @@
+.env
+.env.*
+!.env.example
+!.env.template
+*.xlsx
+*.xlsm
+*.pdf
+*.docx
+*.hwp
+*.hwpx
+*.sql.bak
+*.tar
+backups/
+images/*.tar
+node_modules/
+dist/
+target/
+__pycache__/
+.pytest_cache/
+# Stage 4 customer original templates and generated files
+/templates/*.pptx
+/output/
+src-career-agent-v1.0.zip
